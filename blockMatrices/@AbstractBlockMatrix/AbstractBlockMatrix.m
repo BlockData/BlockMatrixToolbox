@@ -616,13 +616,15 @@ methods
         parent = [];
         
         if isa(this, 'AbstractBlockMatrix')
-            dataA = this.data;
+            dataA = getMatrix(this);
             parent = this;
         end
         
         if isa(that, 'AbstractBlockMatrix')
-            dataB = that.data;
-            parent = that;
+            dataB = getMatrix(that);
+            if isempty(parent)
+                parent = that;
+            end
         end
        
         % compute data of resulting matrix

@@ -127,8 +127,168 @@ methods
 end % end constructors
 
 
-%% Methods
+%% Algorithm monitoring methods
 methods
+    function state = solve(this, varargin)
+        % Iterates this algorithm until a stopping criterion is found
+        %
+        % U = solve(ALGO, U0);
+        %
+        % U = solve(..., PNAME, PVALUE)
+        % Specified one or several optional parameter as name-value pairs.
+        %
+        % List of available parameters
+        % * maxIterNumber:  the maximum number of iteration (default 100)
+        % * residTol:       the tolerance on residuals, as the norm of the
+        %       block-norm of the difference between two successive vectors. 
+        %       Default value is 1e-8.
+        % * eigenTol:       the tolerance on the difference between two
+        %       successive values of the computed eigen value. Default
+        %       value is 1 e-8. 
+        %
+        % See also
+        %   convergence, blockPowerOptions
+        
+        % uses first argument if this is a block-vector
+        if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
+            this.vector = varargin{1};
+            varargin(1) = [];
+        end
+        
+        % parse optimization options
+        options = blockPowerOptions(varargin{:});
+        
+        % initialize the state
+        state = this;
+        
+        % iterate until residual is acceptable
+        for iIter = 1:options.maxIterNumber
+            % performs one iteration, and get residual
+            state = state.next();
+            
+            % test the tolerance on residual
+            if state.residual < options.residTol
+                fprintf('converged to residual after %d iteration(s)\n', iIter);
+                return;
+            end
+            
+%             % test the tolerance on eigen value
+%             if eigenValue(state) < options.eigenTol
+%                 fprintf('converged to eigenValue after %d iteration(s)\n', iIter);
+%                 return;
+%             end
+        end
+        
+        fprintf('Reached maximum number of iterations (%d)\n', iIter);
+    end
+
+    function stateList = convergence(this, varargin)
+        % Iterates this algorithm until a stopping criterion is found
+        %
+        % PATH = convergence(ALGO, U0);
+        %
+        % PATH = convergence(..., PNAME, PVALUE)
+        % Specified one or several optional parameter as name-value pairs.
+        %
+        % List of available parameters
+        % * maxIterNumber:  the maximum number of iteration (default 100)
+        % * residTol:       the tolerance on residuals, as the norm of the
+        %       block-norm of the difference between two successive vectors. 
+        %       Default value is 1e-8.
+        % * eigenTol:       the tolerance on the difference between two
+        %       successive values of the computed eigen value. Default
+        %       value is 1 e-8. 
+        %
+        % See also
+        %   solve, blockPowerOptions
+        
+        % uses first argument if this is a block-vector
+        if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
+            this.vector = varargin{1};
+            varargin(1) = [];
+        end
+        
+        % parse optimization options
+        options = blockPowerOptions(varargin{:});
+        
+        % initialize list of state
+        state = this;
+        stateList = {state};
+        
+        % iterate until residual is acceptable
+        for iIter = 1:options.maxIterNumber
+            % performs one iteration, and agglomerate
+            state = state.next();
+            stateList = [stateList {state}]; %#ok<AGROW>
+            
+            % test the tolerance on residual
+            if state.residual < options.residTol
+                fprintf('converged to residual after %d iteration(s)\n', iIter);
+                return;
+            end
+            
+%             % test the tolerance on eigen value
+%             if eigenValue(state) < options.eigenTol
+%                 fprintf('converged to eigenValue after %d iteration(s)\n', iIter);
+%                 return;
+%             end
+        end
+        
+        fprintf('Reached maximum number of iterations (%d)\n', iIter);
+    end
+    
+    function t = tolerance(this)
+        % return the residual, or difference with previous iteration
+        t = this.residual;
+    end
+    
+   function t = monotony(this)
+       % compute monotony of current state using: u' * A(u) * u
+       % TODO: NITER
+       u = this.vector;
+       Au = computeProduct(this, u);
+       t = u' * Au;
+   end
+   
+   function lambdas = stationarity(this)
+       % return the eigen values of current state
+       u = this.vector;
+       Au = computeProduct(this, u);
+       blockLambdas = blockNorm(Au) ./ blockNorm(u);
+       lambdas = getMatrix(blockLambdas);       
+   end
+   
+   function t = globality(this)
+       % return eig(A - lambda * I)
+       
+       % get vector and core matrix
+       u = this.vector;
+       A = coreMatrix(this, u);
+
+       % compute lambda for current iteration
+       Au = computeProduct(this, u);
+       blockLambdas = blockNorm(Au) ./ blockNorm(u);
+       lambdas = getMatrix(blockLambdas);
+
+       % extract block-dimension
+       dims = blockDimensions(A);
+       dim1 = dims{1};
+       
+       % initialize the lambda_k * I
+       nBlocks = length(dim1);
+       blocks = cell(1, nBlocks);
+       for i = 1:nBlocks
+           blocks{i} = ones(dim1(i)) * lambdas(i);
+       end
+       
+       lambdaI = BlockDiagonal(blocks);
+       t = eig(getMatrix(A - lambdaI));
+   end
+end
+
+
+%% Iteration methods
+methods  
     function res = next(this)
         % Performs a single iteration of the (Block-)Power Algorithm
         %
@@ -149,7 +309,7 @@ methods
         
         % block normalization
         q = this.updateFunction(q);
-        % ususally:
+        % usually:
         % q = blockProduct_hs(1./blockNorm(q), q); 
         
         % create algorithm state data structure
@@ -161,66 +321,10 @@ methods
         res.residual = resid;
         
     end
-    
-    function stateList = solve(this, varargin)
-        % Iterates this algorithm until a stopping criterion is found
-        %
-        % U = solve(ALGO, U0);
-        %
-        % U = solve(..., PNAME, PVALUE)
-        % Specified one or several optional parameter as name-value pairs.
-        %
-        % List of available parameters
-        % * maxIterNumber:  the maximum number of iteration (default 100)
-        % * residTol:       the tolerance on residuals, as the norm of the
-        %       block-norm of the difference between two successive vectors. 
-        %       Default value is 1e-8.
-        % * eigenTol:       the tolerance on the difference between two
-        %       successive values of the computed eigen value. Default
-        %       value is 1 e-8. 
-        %
-        % See also
-        %    blockPowerOptions
-        
-        % uses first argument if this is a block-vector
-        if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
-            this.vector = varargin{1};
-            varargin(1) = [];
-        end
-        
-        % parse optimization options
-        options = blockPowerOptions(varargin{:});
-        
-        % initialize list of state
-        state = this;
-        stateList = {state};
-        
-        % iterate until residual is acceptable
-        for iIter = 1:options.maxIterNumber
-            % performs one iteration, and get residual
-            state = state.next();
-            stateList = [stateList {state}]; %#ok<AGROW>
-            
-            % test the tolerance on residual
-            if state.residual < options.residTol
-                fprintf('converged to residual after %d iteration(s)\n', iIter);
-                return;
-            end
-            
-            % test the tolerance on eigen value
-            if eigenValue(state) < options.eigenTol
-                fprintf('converged to eigenValue after %d iteration(s)\n', iIter);
-                return;
-            end
-        end
-        
-        fprintf('Reached maximum number of iterations (%d)\n', iIter);
+end
 
-    end
-    
-    
-    %% Utility methods 
-    
+%% Utility methods
+methods
     function lambda = eigenValue(this)
         % Compute the current eigen value
         q = blockProduct(this.data, this.vector, this.productType);
@@ -246,101 +350,101 @@ methods
     
     %% Methods for studying the algorithm 
     
-    function monotony(this, v0, varargin)
-        % Display monotony of this algorithm
-        %
-        % usage:
-        %   monotony(ALGO, V0);
-        % where ALGO if the instance of Block power algorithm, and V0 is
-        % the initial value of the vector
-        %
-        % Example
-        %   % create block matrix for problem
-        %   mdims = BlockDimensions({40, [20 30 20]});
-        %   data = BlockMatrix(rand(40, 70), mdims);
-        %   AA = blockProduct_uu(data', data);
-        %   % create block matrix for initial vector
-        %   vdims = BlockDimensions({[20 30 20], 1});
-        %   q0 = BlockMatrix(rand(70, 1), vdims);
-        %   qq = blockProduct_hs(1./blockNorm(q0), q0);
-        %   % compute algorithm monotony
-        %   algo = JacobiBlockPower(AA, qq);
-        %   monotony(algo, qq);
-        
-        % parse optimization options
-        options = blockPowerOptions(varargin{:});
-        
-        % initialize algo
-        this.vector = v0;
-        
-        % initialize display
-        nIter = options.maxIterNumber;
-        lambdaList = zeros(nIter, 1);
-        
-        % iterate
-        for iIter = 1:nIter
-            iterate(this);
-            lambdaList(iIter) = eigenValue(this);
-        end
-        
-        
-        % display result
-        figure; set(gca, 'fontsize', 14); hold on;
-        plot([1 nIter], lambdaList([end end]), 'k');
-        plot(lambdaList, 'color', 'b', 'linewidth', 2);
-        xlabel('Iteration Number');
-        ylabel('Eigen value estimation');
-
-    end
-    function stationarity(this, v0, varargin)
-        % Display stationarity of this algorithm
-        %
-        % usage:
-        %   stationarity(ALGO, V0);
-        % where ALGO if the instance of Block power algorithm, and V0 is
-        % the initial value of the vector
-        %
-        % Example
-        %   % create block matrix for problem
-        %   mdims = BlockDimensions({40, [20 30 20]});
-        %   data = BlockMatrix(rand(40, 70), mdims);
-        %   AA = blockProduct_uu(data', data);
-        %   % create block matrix for initial vector
-        %   vdims = BlockDimensions({[20 30 20], 1});
-        %   q0 = BlockMatrix(rand(70, 1), vdims);
-        %   qq = blockProduct_hs(1./blockNorm(q0), q0);
-        %   % compute algorithm monotony
-        %   algo = JacobiBlockPower(AA, qq);
-        %   stationarity(algo, qq);
-        
-        % parse optimization options
-        options = blockPowerOptions(varargin{:});
-        
-        % initialize algo
-        this.vector = v0;
-        
-        % initialize display
-        nIter = options.maxIterNumber;
-        normList = zeros(nIter, 1);
-        
-        % iterate
-        for iIter = 1:nIter
-            iterate(this);
-            
-            u = this.vector;
-            u2 = computeProduct(this, u);
-            normList(iIter) = norm(blockNorm(u2));
-        end
-        
-        
-        % display result
-        figure; set(gca, 'fontsize', 14); hold on;
-        plot([1 nIter], normList([end end]), 'k');
-        plot(normList, 'color', 'b', 'linewidth', 2);
-        xlabel('Iteration Number');
-        ylabel('Eigen value estimation');
-
-    end
+%     function monotony(this, v0, varargin)
+%         % Display monotony of this algorithm
+%         %
+%         % usage:
+%         %   monotony(ALGO, V0);
+%         % where ALGO if the instance of Block power algorithm, and V0 is
+%         % the initial value of the vector
+%         %
+%         % Example
+%         %   % create block matrix for problem
+%         %   mdims = BlockDimensions({40, [20 30 20]});
+%         %   data = BlockMatrix(rand(40, 70), mdims);
+%         %   AA = blockProduct_uu(data', data);
+%         %   % create block matrix for initial vector
+%         %   vdims = BlockDimensions({[20 30 20], 1});
+%         %   q0 = BlockMatrix(rand(70, 1), vdims);
+%         %   qq = blockProduct_hs(1./blockNorm(q0), q0);
+%         %   % compute algorithm monotony
+%         %   algo = JacobiBlockPower(AA, qq);
+%         %   monotony(algo, qq);
+%         
+%         % parse optimization options
+%         options = blockPowerOptions(varargin{:});
+%         
+%         % initialize algo
+%         this.vector = v0;
+%         
+%         % initialize display
+%         nIter = options.maxIterNumber;
+%         lambdaList = zeros(nIter, 1);
+%         
+%         % iterate
+%         for iIter = 1:nIter
+%             iterate(this);
+%             lambdaList(iIter) = eigenValue(this);
+%         end
+%         
+%         
+%         % display result
+%         figure; set(gca, 'fontsize', 14); hold on;
+%         plot([1 nIter], lambdaList([end end]), 'k');
+%         plot(lambdaList, 'color', 'b', 'linewidth', 2);
+%         xlabel('Iteration Number');
+%         ylabel('Eigen value estimation');
+% 
+%     end
+%     function stationarity(this, v0, varargin)
+%         % Display stationarity of this algorithm
+%         %
+%         % usage:
+%         %   stationarity(ALGO, V0);
+%         % where ALGO if the instance of Block power algorithm, and V0 is
+%         % the initial value of the vector
+%         %
+%         % Example
+%         %   % create block matrix for problem
+%         %   mdims = BlockDimensions({40, [20 30 20]});
+%         %   data = BlockMatrix(rand(40, 70), mdims);
+%         %   AA = blockProduct_uu(data', data);
+%         %   % create block matrix for initial vector
+%         %   vdims = BlockDimensions({[20 30 20], 1});
+%         %   q0 = BlockMatrix(rand(70, 1), vdims);
+%         %   qq = blockProduct_hs(1./blockNorm(q0), q0);
+%         %   % compute algorithm monotony
+%         %   algo = JacobiBlockPower(AA, qq);
+%         %   stationarity(algo, qq);
+%         
+%         % parse optimization options
+%         options = blockPowerOptions(varargin{:});
+%         
+%         % initialize algo
+%         this.vector = v0;
+%         
+%         % initialize display
+%         nIter = options.maxIterNumber;
+%         normList = zeros(nIter, 1);
+%         
+%         % iterate
+%         for iIter = 1:nIter
+%             iterate(this);
+%             
+%             u = this.vector;
+%             u2 = computeProduct(this, u);
+%             normList(iIter) = norm(blockNorm(u2));
+%         end
+%         
+%         
+%         % display result
+%         figure; set(gca, 'fontsize', 14); hold on;
+%         plot([1 nIter], normList([end end]), 'k');
+%         plot(normList, 'color', 'b', 'linewidth', 2);
+%         xlabel('Iteration Number');
+%         ylabel('Eigen value estimation');
+% 
+%     end
     
 end % end methods
 
