@@ -1,4 +1,4 @@
-classdef AbstractBlockMatrix < handle
+classdef AbstractBlockMatrix < BlockTensor
 %ABSTRACTBLOCKMATRIX  Utility class parent of BlockMatrix and BlockDiagonal 
 %
 %   Class AbstractBlockMatrix
@@ -13,7 +13,7 @@ classdef AbstractBlockMatrix < handle
 
 % ------
 % Author: David Legland
-% e-mail: david.legland@nantes.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2015-04-22,    using Matlab 8.4.0.150421 (R2014b)
 % Copyright 2015 INRA - BIA-BIBS.
 
@@ -1014,4 +1014,3 @@ methods
 end % end display methods
 
 end % end classdef
-

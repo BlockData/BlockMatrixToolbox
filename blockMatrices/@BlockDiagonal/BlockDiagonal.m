@@ -17,7 +17,7 @@ classdef (InferiorClasses = {?AbstractBlockMatrix}) BlockDiagonal <  AbstractBlo
 
 % ------
 % Author: David Legland
-% e-mail: david.legland@nantes.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2015-03-02,    using Matlab 8.4.0.150421 (R2014b)
 % Copyright 2015 INRA - BIA-BIBS.
 
