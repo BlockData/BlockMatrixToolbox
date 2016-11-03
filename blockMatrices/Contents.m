@@ -12,12 +12,13 @@
 %
 %   Utility classes:
 %   AbstractBlockMatrix - Utility class parent of BlockMatrix and BlockDiagonal 
+%   PartitionCountDictionary - Singleton class for counting integer partition
 %
 %   Demo files:
-%   demoBlockDiagonal   - Simple demo file for manipulation of BlockDiagonal objects
 %   demoBlockMatrix     - Simple demo file for manipulation of BlockMatrix objects
-%   maxbet_procedure1   - MAXBET procedure for multi-block matrices.
+%   demoBlockDiagonal   - Simple demo file for manipulation of BlockDiagonal objects
+%
 %
 %   Project URL:
-%   https://github.com/dlegland/BlockMatrixToolbox
+%   http://github.com/BlockData/BlockMatrixToolbox
 %

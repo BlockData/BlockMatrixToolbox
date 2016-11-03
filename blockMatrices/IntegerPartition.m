@@ -19,7 +19,7 @@ classdef IntegerPartition < handle
 
 % ------
 % Author: David Legland
-% e-mail: david.legland@nantes.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2015-04-10,    using Matlab 8.4.0.150421 (R2014b)
 % Copyright 2015 INRA - BIA-BIBS.
 
@@ -55,6 +55,11 @@ methods (Static)
         % NP:   the total number of ways the integer N can be partitioned
         %       into S parts.
         %
+        % Example
+        %   IntegerPartition.countPartitions(10, 4)
+        %   ans =
+        %       84
+        %
         % See also
         %   randomPartition, choosePartition
         
@@ -64,7 +69,7 @@ methods (Static)
         % compute key for current case
         key = sprintf('%d.%d', n, s);
         
-        % cjeck if result was already computed
+        % check if result was already computed
         if isKey(dict, key)
             count = dict(key);
             return;
