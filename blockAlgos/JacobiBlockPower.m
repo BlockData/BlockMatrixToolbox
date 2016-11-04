@@ -90,10 +90,10 @@ methods
         % check matrix validity. 
         % PositiveDefinite Matrices are not tested for now.
         [n1, n2] = size(A);
-        if n1 ~= n2 || ~isSymmetric(A) % || ~isPositiveDefinite(A)
-            error('Requires a symmetric positive definite matrix');
+        if n1 ~= n2
+            error('Requires a square matrix');
         end
-        if ~isPositiveDefinite(A)
+        if ~isSymmetric(A) || ~isPositiveDefinite(A)
             warning('Requires a symmetric positive definite matrix');
         end
         this.data = A;
@@ -242,12 +242,30 @@ methods
         t = this.residual;
     end
     
-   function t = monotony(this)
+   function varargout = monotony(this, varargin)
        % compute monotony of current state using: u' * A(u) * u
-       % TODO: NITER
-       u = this.vector;
-       Au = computeProduct(this, u);
-       t = u' * Au;
+       
+       nIter = 100;
+       if ~isempty(varargin) && isnumeric(varargin{1})
+           nIter = varargin{1};
+       end
+       
+       values = zeros(1, nIter);
+       state = this;
+       for i = 1:nIter
+           u = state.vector;
+           Au = computeProduct(state, u);
+           values(i) = getMatrix(u' * Au);
+           state = state.next();
+       end
+       
+       figure;
+       plot(values);
+       xlabel('Iterations');
+       
+       if nargout > 0
+           varargout{1} = values;
+       end
    end
    
    function lambdas = stationarity(this)
