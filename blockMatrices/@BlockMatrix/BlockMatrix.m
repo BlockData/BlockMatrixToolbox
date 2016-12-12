@@ -721,7 +721,7 @@ methods
                     colBlockInds = 1:blockSize(this, 2);
                 end
                 
-%                 setBlock(this, rowBlockInds, colBlockInds, value);
+                % fill sub matrix with input values
                 setSubMatrix(this, rowBlockInds, colBlockInds, value);
                 
             else

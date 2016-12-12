@@ -537,6 +537,13 @@ methods (Test)
         testCase.verifyEqual(exp, res, 'AbsTol', .1);
     end
 
+    function test_subsref_braces_recurse(testCase)
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        res = BM{2, 2}(1, 2);
+        exp = 18;
+        testCase.verifyEqual(exp, res, 'AbsTol', .1);
+    end
+
     function test_subsasgn_parens(testCase)
         BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
         BM(2, 3) = 4;

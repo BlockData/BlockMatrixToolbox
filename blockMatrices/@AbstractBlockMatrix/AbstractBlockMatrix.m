@@ -830,24 +830,32 @@ methods
             % Process braces indexing -> return new Block Matrix
             % corresponding to the specified block(s)
             ns = length(s1.subs);
-            if ns == 2
-                % returns integer partition of corresponding dimension
-                rowBlockInds = s1.subs{1};
-                if ischar(rowBlockInds) && strcmp(rowBlockInds, ':')
-                    rowBlockInds = 1:blockSize(this, 1);
-                end
-                colBlockInds = s1.subs{2};
-                if ischar(colBlockInds) && strcmp(colBlockInds, ':')
-                    colBlockInds = 1:blockSize(this, 2);
-                end
-                varargout{1} = subMatrix(this, rowBlockInds, colBlockInds);                
-            else
+            if ns ~= 2
                 error('Requires two indices for identifying blocks');
+            end
+            
+            % compute integer partition of corresponding dimension
+            rowBlockInds = s1.subs{1};
+            if ischar(rowBlockInds) && strcmp(rowBlockInds, ':')
+                rowBlockInds = 1:blockSize(this, 1);
+            end
+            colBlockInds = s1.subs{2};
+            if ischar(colBlockInds) && strcmp(colBlockInds, ':')
+                colBlockInds = 1:blockSize(this, 2);
+            end
+            
+            % extract the sub-blockmatrix corresponding to selected indices
+            res = subMatrix(this, rowBlockInds, colBlockInds);
+            varargout{1} = res;
+            
+            % eventually call recursively subsref
+            if length(subs) > 1
+                varargout{1} = subsref(res, subs(2:end));
             end
         end
     end
     
-    function n = numArgumentsFromSubscript(this,~,~)
+    function n = numArgumentsFromSubscript(this, subs, indexingContent)
         % Need to overload this to allow proper braces indexing
         n = numel(this);
     end
