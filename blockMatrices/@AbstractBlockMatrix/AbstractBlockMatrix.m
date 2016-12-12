@@ -1,5 +1,5 @@
 classdef AbstractBlockMatrix < BlockTensor
-%ABSTRACTBLOCKMATRIX  Utility class parent of BlockMatrix and BlockDiagonal 
+%ABSTRACTBLOCKMATRIX  Abstract parent class of BlockMatrix and BlockDiagonal 
 %
 %   Class AbstractBlockMatrix
 %

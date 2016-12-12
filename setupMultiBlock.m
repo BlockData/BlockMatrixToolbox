@@ -20,8 +20,10 @@ mainDir = fileparts(fileName);
 disp('Installing BlockMatrix Toolbox...');
 
 % add libraries
+addpath(fullfile(mainDir, 'blockTensors'));
 addpath(fullfile(mainDir, 'blockMatrices'));
 addpath(fullfile(mainDir, 'blockAlgos'));
+addpath(fullfile(mainDir, 'blockTables'));
 
 disp('BlockMatrix Toolbox installed!');
 

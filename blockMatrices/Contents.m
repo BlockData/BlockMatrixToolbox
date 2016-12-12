@@ -5,15 +5,9 @@
 %   Data classes:
 %   BlockMatrix              - Matrix that can be divided into several blocks
 %   BlockDiagonal            - Block Matrix with zeros blocks except on diagonal blocks
-%   BlockTensor              - Parent interface for block-partitioned multidimensional tensors
-%
-%   Representation of block dimensions:
-%   BlockDimensions          - Store the block dimensions of a BlockMatrix data structure
-%   IntegerPartition         - Store an ordered partition of an integer
 %
 %   Utility classes:
-%   AbstractBlockMatrix      - Utility class parent of BlockMatrix and BlockDiagonal 
-%   PartitionCountDictionary - Singleton class for counting integer partition
+%   AbstractBlockMatrix      - Abstract parent class of BlockMatrix and BlockDiagonal
 %
 %   Demo files:
 %   demoBlockMatrix          - Simple demo file for manipulation of BlockMatrix objects
