@@ -12,7 +12,7 @@ classdef MaxBetIterator < handle
 
 % ------
 % Author: David Legland
-% e-mail: david.legland@nantes.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2015-12-14,    using Matlab 8.6.0.267246 (R2015b)
 % Copyright 2015 INRA - BIA-BIBS.
 

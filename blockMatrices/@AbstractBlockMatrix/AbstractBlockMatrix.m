@@ -840,10 +840,7 @@ methods
                 if ischar(colBlockInds) && strcmp(colBlockInds, ':')
                     colBlockInds = 1:blockSize(this, 2);
                 end
-                varargout{1} = subMatrix(this, rowBlockInds, colBlockInds);
-%                 newData = subMatrix(this, rowBlockInds, colBlockInds);
-%                 varargout{1} = BlockMatrix.create(newData, rowBlockInds, colBlockInds);
-                
+                varargout{1} = subMatrix(this, rowBlockInds, colBlockInds);                
             else
                 error('Requires two indices for identifying blocks');
             end

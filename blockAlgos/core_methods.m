@@ -25,7 +25,7 @@ function coreModel = core_methods(data, method, maxdim, init, CORE, tol)
  
 % ------
 % Author: David Legland
-% e-mail: david.legland@grignon.inra.fr
+% e-mail: david.legland@inra.fr
 % Created: 2015-04-14,    using Matlab 8.4.0.150421 (R2014b)
 % Copyright 2015 INRA - Cepia Software Platform.
 
