@@ -36,7 +36,7 @@ methods (Test)
     function test_blockNorm(testCase)
         data = reshape(1:28, [7 4])';
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         BM2 = blockNorm(BM);
 
@@ -51,7 +51,7 @@ methods (Test)
     function test_fapply(testCase)
         data = reshape(1:28, [7 4])';
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         BM2 = fapply(@sqrt, BM);
         
@@ -74,7 +74,7 @@ methods (Test)
     
     function test_oneBlock_blockMatrix(testCase)
         data = reshape((1:28)', [7 4])';
-        BM0 = BlockMatrix(data, [2 2], [2 3 2]);
+        BM0 = BlockMatrix.create(data, [2 2], [2 3 2]);
         
         BM = BlockMatrix.oneBlock(BM0);
 
@@ -94,7 +94,7 @@ methods (Test)
     
     function test_scalarBlock_blockMatrix(testCase)
         data = reshape((1:28)', [7 4])';
-        BM0 = BlockMatrix(data, [2 2], [2 3 2]);
+        BM0 = BlockMatrix.create(data, [2 2], [2 3 2]);
         
         BM = BlockMatrix.scalarBlock(BM0);
 
@@ -115,7 +115,7 @@ methods (Test)
     
     function test_uniformBlock_blockMatrix(testCase)
         data = reshape((1:24)', [6 4])';
-        BM0 = BlockMatrix(data, [1 2 1], [2 1 3]);
+        BM0 = BlockMatrix.create(data, [1 2 1], [2 1 3]);
         
         BM = BlockMatrix.uniformBlocks(BM0, [2 2]);
         
@@ -146,7 +146,7 @@ methods (Test)
         dataB = reshape(1:36, [4 9]);
         
         A = BlockMatrix.oneBlock(dataA);
-        B = BlockMatrix(dataB, {[2 2], [3 3 3]});
+        B = BlockMatrix.create(dataB, {[2 2], [3 3 3]});
         X = blockProduct_sh(A, B);
         
         testCase.verifyEqual(blockSize(B), blockSize(X));
@@ -157,7 +157,7 @@ methods (Test)
     function test_blockProduct_su(testCase)
         blockA = [1 2 3;3 2 1];
         A = BlockMatrix.oneBlock(blockA);
-        B = BlockMatrix(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
+        B = BlockMatrix.create(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
         X = blockProduct_su(A, B);
         
         % verify the dimensions of the result BlockMatrix
@@ -177,8 +177,8 @@ methods (Test)
     end
     
     function test_blockProduct_sk(testCase)
-        A = oneBlock(reshape(1:4, [2 2]));
-        B = BlockMatrix(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
+        A = BlockMatrix.oneBlock(reshape(1:4, [2 2]));
+        B = BlockMatrix.create(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
         X = blockProduct_sk(A, B);
         
         testCase.verifyEqual(size(A) .* size(B), size(X));
@@ -186,8 +186,8 @@ methods (Test)
     end
     
     function test_blockProduct_hs(testCase)
-        A = scalarBlock(reshape(1:4, [2 2]));
-        B = BlockMatrix(reshape(1:16, [4 4]), {[2 2], [2 2]});
+        A = BlockMatrix.scalarBlock(reshape(1:4, [2 2]));
+        B = BlockMatrix.create(reshape(1:16, [4 4]), {[2 2], [2 2]});
         X = blockProduct_hs(A, B);
  
         testCase.verifyEqual(size(B), size(X));
@@ -204,9 +204,9 @@ methods (Test)
     function test_blockProduct_hh(testCase)
         dataA = reshape(1:36, [6 6]);
         dims = BlockDimensions({[3 3], [2 2 2]});
-        A = BlockMatrix(dataA, dims);
+        A = BlockMatrix.create(dataA, dims);
         dataB = magic(6);
-        B = BlockMatrix(dataB, dims);
+        B = BlockMatrix.create(dataB, dims);
         X = blockProduct_hh(A, B);
 
         testCase.verifyEqual(size(B), size(X));
@@ -216,8 +216,8 @@ methods (Test)
     end
     
     function test_blockProduct_hu(testCase)
-        A = BlockMatrix(reshape(1:20, [5 4]), {[3 2], [2 2]});
-        B = BlockMatrix(reshape(1:12, [4 3]), {[2 2], [2 1]});
+        A = BlockMatrix.create(reshape(1:20, [5 4]), {[3 2], [2 2]});
+        B = BlockMatrix.create(reshape(1:12, [4 3]), {[2 2], [2 1]});
         X = blockProduct_hu(A, B);
         
         % verify validity of sizes
@@ -240,8 +240,8 @@ methods (Test)
     end
     
     function test_blockProduct_hk(testCase)
-        A = BlockMatrix(reshape(1:12, [3 4])', [2 2], [1 1 1]);
-        B = BlockMatrix(reshape(1:36, [4 9]), [2 2], [3 3 3]);
+        A = BlockMatrix.create(reshape(1:12, [3 4])', [2 2], [1 1 1]);
+        B = BlockMatrix.create(reshape(1:36, [4 9]), [2 2], [3 3 3]);
         X = blockProduct_hk(A, B);
        
         testCase.verifyEqual(blockSize(A, 1), blockSize(X, 1));
@@ -258,7 +258,7 @@ methods (Test)
     function test_blockProduct_us(testCase)
         A = BlockMatrix.scalarBlock([1 2 3; 3 2 1]);
         dataB = reshape(1:36, [4 9])';
-        B = BlockMatrix(dataB, {[3 3 3], [2 2]});
+        B = BlockMatrix.create(dataB, {[3 3 3], [2 2]});
         X = blockProduct_us(A, B);
         
         testCase.verifyEqual(blockSize(A, 1), blockSize(X, 1));
@@ -266,8 +266,8 @@ methods (Test)
     end
     
     function test_blockProduct_uh(testCase)
-        A = BlockMatrix(reshape(1:36, [9 4])', {[2 2], [3 3 3]});
-        B = BlockMatrix(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
+        A = BlockMatrix.create(reshape(1:36, [9 4])', {[2 2], [3 3 3]});
+        B = BlockMatrix.create(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
         X = blockProduct_uh(A, B);
         
         testCase.verifyEqual(blockSize(A, 1), blockSize(X, 1));
@@ -275,8 +275,8 @@ methods (Test)
     end
     
     function test_blockProduct_uu(testCase)
-        A = BlockMatrix(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
-        B = BlockMatrix(reshape(1:36, [6 6]), {[3 3], [2 1 2 1]});
+        A = BlockMatrix.create(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
+        B = BlockMatrix.create(reshape(1:36, [6 6]), {[3 3], [2 1 2 1]});
         X = blockProduct_uu(A, B);
         
         testCase.verifyEqual(blockSize(A, 1), blockSize(X, 1));
@@ -284,8 +284,8 @@ methods (Test)
     end
     
     function test_blockProduct_uk(testCase)
-        A = BlockMatrix(reshape(1:12, [3 4]), 3, [1 1 1 1 ]);
-        B = BlockMatrix(reshape(1:12, [4 3]), [1 1 1 1], [1 2]);
+        A = BlockMatrix.create(reshape(1:12, [3 4]), 3, [1 1 1 1 ]);
+        B = BlockMatrix.create(reshape(1:12, [4 3]), [1 1 1 1], [1 2]);
         X = blockProduct_uk(A, B);
         
         testCase.verifyEqual(blockSize(A, 1), blockSize(X, 1));
@@ -302,7 +302,7 @@ methods (Test)
     end
     
     function test_blockProduct_kh(testCase)
-        A = BlockMatrix(reshape(1:36, [9 4]), {[3 3 3], [2 2]});
+        A = BlockMatrix.create(reshape(1:36, [9 4]), {[3 3 3], [2 2]});
         B = BlockMatrix.oneBlock(2*ones(3,2));
         X = blockProduct_kh(A, B);
         
@@ -310,7 +310,7 @@ methods (Test)
     end
     
    function test_blockProduct_ku(testCase)
-       A = BlockMatrix(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
+       A = BlockMatrix.create(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
        B = BlockMatrix.oneBlock(ones(3,2));
        X = blockProduct_ku(A, B);
        
@@ -324,7 +324,7 @@ methods (Test)
     function test_size(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         siz = size(BM);
         testCase.verifyEqual(siz(1), 4);
@@ -334,7 +334,7 @@ methods (Test)
     function test_size_two_outputs(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         [siz1, siz2] = size(BM);
         testCase.verifyEqual(siz1, 4);
@@ -344,7 +344,7 @@ methods (Test)
     function test_blockSize(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         siz = blockSize(BM);
         testCase.verifyEqual(siz(1), 2);
@@ -354,7 +354,7 @@ methods (Test)
     function test_blockSize_two_outputs(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         [siz1, siz2] = blockSize(BM);
         testCase.verifyEqual(siz1, 2);
@@ -368,49 +368,49 @@ end
 methods (Test)
     function test_isOneBlock_true(testCase)
        data = reshape(1:28, [7 4])';
-       BM = BlockMatrix(data, {4, 7});
+       BM = BlockMatrix.create(data, {4, 7});
        testCase.verifyTrue(isOneBlock(BM));
     end
     
     function test_isOneBlock_false(testCase)
         data = reshape(1:28, [7 4])';
-        BM = BlockMatrix(data, {[2 2], [2 3 2]});
+        BM = BlockMatrix.create(data, {[2 2], [2 3 2]});
         testCase.verifyFalse(isOneBlock(BM));
     end
     
     function test_isScalarBlock_true(testCase)
         data = reshape(1:28, [7 4])';
-        BM = BlockMatrix(data, {ones(1,4), ones(1,7)});
+        BM = BlockMatrix.create(data, {ones(1,4), ones(1,7)});
         testCase.verifyTrue(isScalarBlock(BM));
     end
     
     function test_isScalarBlock_false(testCase)
         data = reshape(1:28, [7 4])';
-        BM = BlockMatrix(data, {[2 2], [2 3 2]});
+        BM = BlockMatrix.create(data, {[2 2], [2 3 2]});
         testCase.verifyFalse(isScalarBlock(BM));
     end
     
     function test_isUniformBlock_true(testCase)
        data = reshape(1:24, [6 4])';
-       BM = BlockMatrix(data, {[2 2], [3 3]});
+       BM = BlockMatrix.create(data, {[2 2], [3 3]});
        testCase.verifyTrue(isUniformBlock(BM));
     end
     
     function test_isUniformBlock_false(testCase)
        data = reshape(1:24, [6 4])';
-       BM = BlockMatrix(data, {[2 2], [4 2]});
+       BM = BlockMatrix.create(data, {[2 2], [4 2]});
        testCase.verifyFalse(isUniformBlock(BM));
     end
 
     function test_isVectorBlock_true(testCase)
        data = reshape(1:24, [6 4])';
-       BM = BlockMatrix(data, {4, [2 2 2]});
+       BM = BlockMatrix.create(data, {4, [2 2 2]});
        testCase.verifyTrue(isVectorBlock(BM));
     end
     
     function test_isVectorBlock_false(testCase)
        data = reshape(1:24, [6 4])';
-       BM = BlockMatrix(data, {[2 2], [4 2]});
+       BM = BlockMatrix.create(data, {[2 2], [4 2]});
        testCase.verifyFalse(isVectorBlock(BM));
     end
 
@@ -422,7 +422,7 @@ methods (Test)
     function test_log_exp(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         res = log(exp(BM));
         
@@ -438,7 +438,7 @@ methods (Test)
         
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
         
         BM2 = BM';
         
@@ -451,7 +451,7 @@ methods (Test)
     function test_cat_dir1(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         BM2 = cat(1, BM, BM);
 
@@ -464,7 +464,7 @@ methods (Test)
     function test_cat_dir2(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         BM2 = cat(2, BM, BM);
 
@@ -477,7 +477,7 @@ methods (Test)
     function test_horzcat(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         BM2 = [BM BM];
 
@@ -490,7 +490,7 @@ methods (Test)
     function test_vertcat(testCase)
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         BM2 = [BM ; BM];
 
@@ -508,11 +508,11 @@ methods (Test)
     function test_times(testCase)
         data1 = reshape(1:28, [4 7]);
         parts1 = {[2 2], [2 3 2]};
-        BM1 = BlockMatrix(data1, parts1);
+        BM1 = BlockMatrix.create(data1, parts1);
         
         data2 = reshape(1:35, [7 5]);
         parts2 = {[2 3 2], [2 1 2]};
-        BM2 = BlockMatrix(data2, parts2);
+        BM2 = BlockMatrix.create(data2, parts2);
         
         data3 = data1 * data2;
         BM3 = BM1 * BM2;
@@ -525,25 +525,26 @@ end
 methods (Test)
     
     function test_subsref_parens(testCase)
-        BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
         res = BM(2, 3);
         testCase.verifyEqual(10, res, 'AbsTol', .1);
     end
     
     function test_subsref_braces(testCase)
-        BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
         res = BM{2, 3};
-        testCase.verifyEqual([20 21; 27 28], res, 'AbsTol', .1);
+        exp = BlockMatrix.oneBlock([20 21; 27 28]);
+        testCase.verifyEqual(exp, res, 'AbsTol', .1);
     end
 
     function test_subsasgn_parens(testCase)
-        BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
         BM(2, 3) = 4;
         testCase.verifyEqual(4, BM(2, 3));
     end
     
     function test_subsasgn_braces(testCase)
-        BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 2 3]);
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 2 3]);
         BM{2, 3} = [1 2 3;4 5 6];
         testCase.verifyEqual(4, BM(4, 5));
     end

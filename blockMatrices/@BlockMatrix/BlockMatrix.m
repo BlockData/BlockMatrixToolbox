@@ -40,7 +40,21 @@ properties
 end % end properties
 
 %% Static methods
+% A collection of static methods, mostly static factories.
 methods (Static)
+    function BM = create(data, varargin)
+        %CREATE Create a new Block Matrix
+        %
+        % Example
+        %   BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        %   reveal(BM)
+        %        2  3  2
+        %     2  +  +  +
+        %     2  +  +  +
+        %
+        BM = BlockMatrix(data, varargin{:});
+    end
+    
     function res = zeros(blockDims)
         %ZEROS Create an empty BlockMatrix with specified block-dimensions
         %
@@ -188,9 +202,11 @@ methods
         %   BM = BlockMatrix(DATA, DIMS);
         %   Creates a new BlockMatrix instance from a data array and a
         %   BlockDimensions object.
+        %
         %   BM = BlockMatrix(DATA, DIMS1, DIMS2);
         %   Creates a new BlockMatrix instance from a data array and the
         %   block dimensions for rows and columns.
+        %
         %   BM = BlockMatrix(BM0);
         %   Creates a new BlockMatrix instance from an existing BlockMatrix
         %   that can also be a BlockDiagonal object.
