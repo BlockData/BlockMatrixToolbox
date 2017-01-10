@@ -238,19 +238,49 @@ methods
     end
     
     function t = tolerance(this)
-        % return the residual, or difference with previous iteration
+        % Returns the residual, or difference with previous iteration
         t = this.residual;
     end
     
    function varargout = monotony(this, varargin)
-       % compute monotony of current state using: u' * A(u) * u
+       % Computes monotony of current state using: u' * A(u) * u
+       %
+       % Usage:
+       %    monotony(ALGO)
+       %    monotony(..., 'nIter', N);
+       %    Specifies the number of iterations
+       %    monotony(..., 'display', DISP)
+       %    Specifies whether the resulting curve should be displayed 
+       %    (DISP = 'on') or not (DISP = 'off').
+       %
        
+       % default value for iteration number
        nIter = 100;
+       display = 'on';
+
+       % get iteration number if given as numeric
        if ~isempty(varargin) && isnumeric(varargin{1})
            nIter = varargin{1};
+           varargin(1) = [];
        end
        
+       % parses input argument
+       while length(varargin) > 1
+           paramName = varargin{1};
+           if strcmpi(paramName, 'nIter')
+               nIter = varargin{2};
+           elseif strcmpi(paramName, 'display')
+               display = varargin{2};
+           else
+               error(['Unknown parameter name: ' paramName]);
+           end
+           varargin(1:2) = [];
+       end
+       
+       % initialize reuslt array
        values = zeros(1, nIter);
+       
+       % iterate algorithm for the given number of iterations
        state = this;
        for i = 1:nIter
            u = state.vector;
@@ -259,17 +289,24 @@ methods
            state = state.next();
        end
        
-       figure;
-       plot(values);
-       xlabel('Iterations');
+       % eventually displays the result
+       if strcmp(display, 'on')
+           figure;
+           plot(values);
+           xlabel('Iterations');
+       end
        
+       % eventually returns the computed values
        if nargout > 0
            varargout{1} = values;
        end
    end
-   
-   function lambdas = stationarity(this)
-       % return the eigen values of current state
+  
+   function lambdas = pseudoEigenValues(this)
+       % Returns the pseudo eigen values of current state
+       %
+       % (renamed from "function lambdas = stationarity(this)")
+       
        u = this.vector;
        Au = computeProduct(this, u);
        blockLambdas = blockNorm(Au) ./ blockNorm(u);
@@ -277,7 +314,7 @@ methods
    end
    
    function t = globality(this)
-       % return eig(A - lambda * I)
+       % Returns eig(A - lambda * I)
        
        % get vector and core matrix
        u = this.vector;
@@ -337,31 +374,30 @@ methods
         % compute residual
         resid = norm(blockNorm(q - qq), this.normType); 
         res.residual = resid;
-        
     end
 end
 
 %% Utility methods
 methods
     function lambda = eigenValue(this)
-        % Compute the current eigen value
+        % Computes the current eigen value
         q = blockProduct(this.data, this.vector, this.productType);
         lambda = norm(q, this.normType);
     end
     
     function Au = computeProduct(this, u)
-        % Compute the (w1,w2)-product of core matrix by the specified vector
+        % Computes the (w1,w2)-product of core matrix by the specified vector
         A = this.core(this.data, u);
         Au = blockProduct(A, u, this.productType);
     end
     
     function A = coreMatrix(this, u)
-        % Compute the current core matrix, from data matrix and vector U 
+        % Computes the current core matrix, from data matrix and vector U 
         A = this.core(this.data, u);
     end
     
     function un = normalizeVector(this, u)
-        % Compute normalized vector, using inner settings
+        % Computes normalized vector, using inner settings
         un = this.updateFunction(u);
     end
     

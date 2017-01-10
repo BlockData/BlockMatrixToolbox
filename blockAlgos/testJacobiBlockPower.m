@@ -95,7 +95,7 @@ end
 % iterate until a stopping criterium is met
 pathToSolution = solve(state0);
 
-% get solution
-solution = pathToSolution{end}.vector;
-disp('Transposed solution:');
-disp(solution');
+% % get solution
+% solution = pathToSolution{end}.vector;
+% disp('Transposed solution:');
+% disp(solution');
