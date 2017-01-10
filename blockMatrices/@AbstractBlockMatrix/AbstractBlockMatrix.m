@@ -348,7 +348,7 @@ methods
         % Return a new Block-Matrix corresponding to specified block indices
         %
         % Example
-        %     BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        %     BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
         %     BM{2, [1 3]} = ones(2, 4)
         %     BM = 
         %     BlockMatrix object with 4 rows and 7 columns
@@ -788,7 +788,7 @@ methods
     function varargout = subsref(this, subs)
         % Override subsref for Block Matrices objects
         %
-        % BM = BlockMatrix(reshape(1:28, [7 4])', [2 2], [2 3 2])
+        % BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2])
         % BM(2, 3)
         % ans =
         %     10

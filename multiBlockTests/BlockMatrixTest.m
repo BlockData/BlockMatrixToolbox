@@ -556,6 +556,20 @@ methods (Test)
         testCase.verifyEqual(4, BM(4, 5));
     end
 
+    function test_subsasgn_chained_scalarToScalar(testCase)
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        BM{1,2}(2,3) = 10;
+        val = BM(2, 5);
+        testCase.verifyEqual(10, val, 'AbsTol', .1);
+    end
+    
+    function test_subsasgn_chained_matrixToMatrix(testCase)
+        BM = BlockMatrix.create(reshape(1:28, [7 4])', [2 2], [2 3 2]);
+        BM{1,2}(1:2, 1:3) = [10 11 12;21 22 23];
+        val = BM(2, 5);
+        testCase.verifyEqual(23, val, 'AbsTol', .1);
+    end
+    
 end
 
 end % end classdef

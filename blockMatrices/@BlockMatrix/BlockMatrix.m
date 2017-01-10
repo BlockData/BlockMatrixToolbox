@@ -4,21 +4,21 @@ classdef BlockMatrix < AbstractBlockMatrix
 %   BlockMatrix objects can be constructed in several ways:
 %   data = reshape(1:28, [4 7]);
 %   % construction from a cell array of integer partitions
-%   BM = BlockMatrix(data, {[2 2], [2 3 2]});
+%   BM = BlockMatrix.create(data, {[2 2], [2 3 2]});
 %   % construction from integer partitions in each direction
-%   BM = BlockMatrix(data, [2 2], [2 3 2]);
+%   BM = BlockMatrix.create(data, [2 2], [2 3 2]);
 %   % construction from a BlockDimension object
 %   DIMS = BlockDimensions({[2 2], [2 3 2]});
-%   BM = BlockMatrix(data, DIMS);
+%   BM = BlockMatrix.create(data, DIMS);
 %
 %   Example
 %     data = reshape(1:28, [7 4])';
 %     dims = BlockDimensions({[2 2], [2 3 2]});
-%     BM = BlockMatrix(data, dims);
+%     BM = BlockMatrix.create(data, dims);
 %     disp(BM);
 %
 %   See also
-%     BlockDiagonal, BlockDimensions
+%     BlockDiagonal, BlockDimensions, AbstractBlockMatrix
 %
 
 % ------
@@ -711,7 +711,7 @@ methods
             
             ns = length(s1.subs);
             if ns == 2
-                % returns integer partition of corresponding dimension
+                % Computes row and col indices of blocks
                 rowBlockInds = s1.subs{1};
                 if ischar(rowBlockInds) && strcmp(rowBlockInds, ':')
                     rowBlockInds = 1:blockSize(this, 1);
@@ -721,9 +721,34 @@ methods
                     colBlockInds = 1:blockSize(this, 2);
                 end
                 
-                % fill sub matrix with input values
-                setSubMatrix(this, rowBlockInds, colBlockInds, value);
                 
+                % extract block partitions in each direction
+                parts1 = blockDimensions(this, 1);
+                parts2 = blockDimensions(this, 2);
+                rowInds = blockIndices(parts1, rowBlockInds);
+                colInds = blockIndices(parts2, colBlockInds);
+
+                % process the case of chained subsref
+                if length(subs) > 1
+                    s2 = subs(2);
+                    ns2 = length(s2.subs);
+                    
+                    % can only handle parens indexing
+                    if ~strcmp(subs(2).type, '()')
+                        error('Requires parens indexing as second reference');
+                    end
+                    
+                    % manages two subs for the moment
+                    if ns2 == 2
+                        rowInds = rowInds(s2.subs{1});
+                        colInds = colInds(s2.subs{2});
+                    else
+                        error('Requires two indices for identifying subblocks');
+                    end
+                end
+                
+                % fill sub matrix with input values
+                this.data(rowInds, colInds) = value;
             else
                 error('Requires two indices for identifying blocks');
             end
