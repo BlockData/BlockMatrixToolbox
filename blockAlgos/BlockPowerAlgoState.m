@@ -1,8 +1,9 @@
 classdef BlockPowerAlgoState < handle
-%BLOCKPOWERALGOSTATE Abstract class for iterating block power algorithms
+%BLOCKPOWERALGOSTATE Current iteration of a block power algorithm
 %
-%   Abstract class for iterating block power algorithms. This template is
-%   intended to be derived and implemented by concrete classes.
+%   Contains the current state of a block power iteration algorithm.
+%   The state is defined by the vector, and eventually the residual from
+%   previous state (equal to NaN in case of first iteration).
 %
 %   See also
 %     JacobiBlockPower, GaussBlockPower 
@@ -16,23 +17,44 @@ classdef BlockPowerAlgoState < handle
 
 %% Properties
 properties
+    % the block vector representing the current solution
+    vector;
+
+    % the residual from previous state. NaN for first iteration.
+    residual = NaN;
+
 end % end properties
 
 
 %% Constructor
 methods
-    function this = BlockPowerAlgoState(varargin)
-    % Constructor for BlockPowerAlgo class
-
+    function this = BlockPowerAlgoState(init, varargin)
+        % Constructor for BlockPowerAlgo class
+        %
+        %   usage:
+        %   STATE = BlockPowerAlgoState(V);
+        %
+        
+        % copy constructor
+        if isa(init, 'BlockPowerAlgoState')
+            this.vector = init.vector;
+            this.residual = init.residual;
+            return;
+        end
+        
+        % initialisation constructor
+        if ~isa(init, 'AbstractBlockMatrix')
+            error('Requires an instance of BlockMatrix as first input');
+        end
+        this.vector = init;
+        
+        % eventuallyu copy residual
+        if ~isempty(varargin) && isnumeric(varargin{1}) && isscalar(varargin{1})
+            this.residual = varargin{1};
+        end
     end
 
 end % end constructors
-
-
-%% Methods
-methods (Abstract)
-    newState = next(this)
-end % end methods
 
 end % end classdef
 

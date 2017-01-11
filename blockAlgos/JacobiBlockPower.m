@@ -1,18 +1,21 @@
-classdef JacobiBlockPower < BlockPowerAlgoState
+classdef JacobiBlockPower < BlockPowerAlgo
 %JACOBIBLOCKPOWER Jacobi algorithm for solving block power algorithms
 %
 %   STATE = JacobiBlockPower(BM)
-%   STATE = JacobiBlockPower(BM, U0)
 %   Creates a new instance of Jacobi Block Power iteration algorithm, using
 %   the specified Block-Matrix BM for representing the problem, and an
 %   optional Block-Vector representing the initial state of the algorithm.
-%   If U0 is not specified, a block vector containing only 1 is used.
 %
 %   The algorithm can be used that way:
-%   NEWSTATE = next(STATE)
+%   NEWSTATE = iterate(STATE)
 %
 %   Example
-%
+%     data0 = round(rand(4, 7) * 1000) / 1000;
+%     data = BlockMatrix.create(data0, 4, [2 3 2]);
+%     AA = blockProduct_uu(data', data);
+%     AA.data = max(AA.data, AA.data'); % ensure symmetry of the matrix
+%     algo = JacobiBlockPower(AA);
+%     
 %
 %   See also
 %     GaussBlockPower
@@ -29,14 +32,14 @@ properties
     % the BlockMatrix representing the problem
     data;
     
-    % the block vector representing the initial solution
-    vector;
+%     % the block vector representing the initial solution
+%     vector;
 
     % a function handle for computing matrix from A and u. Default is A.
     core;
     
-    % the residual from previous state. NaN for first iteration.
-    residual = NaN;
+%     % the residual from previous state. NaN for first iteration.
+%     residual = NaN;
 
     % the type of block product to apply on (block)matrix and (block)vector
     % default is "uu"
@@ -72,7 +75,7 @@ methods
         % Copy constructor
         if isa(A, 'JacobiBlockPower')
             this.data   = A.data;
-            this.vector = A.vector;
+%             this.vector = A.vector;
             this.core   = A.core;
 
             this.productType    = A.productType;
@@ -93,29 +96,32 @@ methods
         if n1 ~= n2
             error('Requires a square matrix');
         end
-        if ~isSymmetric(A) || ~isPositiveDefinite(A)
-            warning('Requires a symmetric positive definite matrix');
+        if ~isSymmetric(A)
+            warning('Requires a symmetric matrix');
+        end
+        if ~isPositiveDefinite(A)
+            warning('Requires a positive definite matrix');
         end
         this.data = A;
         
-        % Check if initialisation vector is precised
-        if nargin > 1
-            % use second input argument for initial vector
-            var1 = varargin{1};
-            if ~isa(var1, 'BlockMatrix')
-                error('Second argument should be a block-matrix');
-            end
-            if blockSize(var1, 2) ~= 1
-                error('Second argument should be a block-matrix with one block-column');
-            end
-            this.vector = varargin{1};
-            
-        else
-            % create initial vector from matrix size
-            n = size(A, 1);
-            vdim = blockDimensions(A, 2);
-            this.vector = BlockMatrix(ones(n, 1), vdim, 1);
-        end
+%         % Check if initialisation vector is precised
+%         if nargin > 1
+%             % use second input argument for initial vector
+%             var1 = varargin{1};
+%             if ~isa(var1, 'BlockMatrix')
+%                 error('Second argument should be a block-matrix');
+%             end
+%             if blockSize(var1, 2) ~= 1
+%                 error('Second argument should be a block-matrix with one block-column');
+%             end
+%             this.vector = varargin{1};
+%             
+%         else
+%             % create initial vector from matrix size
+%             n = size(A, 1);
+%             vdim = blockDimensions(A, 2);
+%             this.vector = BlockMatrix(ones(n, 1), vdim, 1);
+%         end
         
         % default core function simply returns the original matrix.
         this.core = @(A,u) A;
@@ -129,7 +135,7 @@ end % end constructors
 
 %% Algorithm monitoring methods
 methods
-    function state = solve(this, varargin)
+    function state = solve(this, state, varargin)
         % Iterates this algorithm until a stopping criterion is found
         %
         % U = solve(ALGO, U0);
@@ -149,22 +155,22 @@ methods
         % See also
         %   convergence, blockPowerOptions
         
-        % uses first argument if this is a block-vector
-        if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
-            this.vector = varargin{1};
-            varargin(1) = [];
-        end
+%         % uses first argument if this is a block-vector
+%         if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
+%             this.vector = varargin{1};
+%             varargin(1) = [];
+%         end
         
         % parse optimization options
         options = blockPowerOptions(varargin{:});
         
-        % initialize the state
-        state = this;
+%         % initialize the state
+%         state = this;
         
         % iterate until residual is acceptable
         for iIter = 1:options.maxIterNumber
             % performs one iteration, and get residual
-            state = state.next();
+            state = this.iterate(state);
             
             % test the tolerance on residual
             if state.residual < options.residTol
@@ -182,7 +188,7 @@ methods
         fprintf('Reached maximum number of iterations (%d)\n', iIter);
     end
 
-    function stateList = convergence(this, varargin)
+    function stateList = convergence(this, state, varargin)
         % Iterates this algorithm until a stopping criterion is found
         %
         % PATH = convergence(ALGO, U0);
@@ -202,23 +208,23 @@ methods
         % See also
         %   solve, blockPowerOptions
         
-        % uses first argument if this is a block-vector
-        if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
-            this.vector = varargin{1};
-            varargin(1) = [];
-        end
+%         % uses first argument if this is a block-vector
+%         if nargin > 1 && isa(varargin{1}, 'AbstractBlockMatrix')
+%             this.vector = varargin{1};
+%             varargin(1) = [];
+%         end
         
         % parse optimization options
         options = blockPowerOptions(varargin{:});
         
         % initialize list of state
-        state = this;
+%         state = this;
         stateList = {state};
         
         % iterate until residual is acceptable
         for iIter = 1:options.maxIterNumber
             % performs one iteration, and agglomerate
-            state = state.next();
+            state = this.iterate(state);
             stateList = [stateList {state}]; %#ok<AGROW>
             
             % test the tolerance on residual
@@ -237,9 +243,9 @@ methods
         fprintf('Reached maximum number of iterations (%d)\n', iIter);
     end
     
-    function t = tolerance(this)
+    function t = tolerance(this, state) %#ok<INUSL>
         % Returns the residual, or difference with previous iteration
-        t = this.residual;
+        t = state.residual;
     end
     
    function varargout = monotony(this, varargin)
@@ -344,7 +350,7 @@ end
 
 %% Iteration methods
 methods  
-    function res = next(this)
+    function newState = iterate(this, state)
         % Performs a single iteration of the (Block-)Power Algorithm
         %
         % NEWSTATE = iterate(STATE)
@@ -354,7 +360,7 @@ methods
         %
         
         % extract vector
-        qq = this.vector;
+        qq = state.vector;
 
         % compute the matrix from the core function and the input data
         A = this.core(this.data, qq);
@@ -368,14 +374,46 @@ methods
         % q = blockProduct_hs(1./blockNorm(q), q); 
         
         % create algorithm state data structure
-        res = JacobiBlockPower(this);
-        res.vector = q;
+        newState = BlockPowerAlgoState(q);
 
         % compute residual
         resid = norm(blockNorm(q - qq), this.normType); 
-        res.residual = resid;
+        newState.residual = resid;
     end
 end
+% methods  
+%     function res = next(this)
+%         % Performs a single iteration of the (Block-)Power Algorithm
+%         %
+%         % NEWSTATE = iterate(STATE)
+%         % where STATE is a correctly initialized JacobiBlockPower
+%         % algorithm, returns the new state of the algorithm, as an instance
+%         % of JacobiPowerBlock. 
+%         %
+%         
+%         % extract vector
+%         qq = this.vector;
+% 
+%         % compute the matrix from the core function and the input data
+%         A = this.core(this.data, qq);
+%         
+%         % performs block-product on current vector
+%         q = blockProduct(A, qq, this.productType);
+%         
+%         % block normalization
+%         q = this.updateFunction(q);
+%         % usually:
+%         % q = blockProduct_hs(1./blockNorm(q), q); 
+%         
+%         % create algorithm state data structure
+%         res = JacobiBlockPower(this);
+%         res.vector = q;
+% 
+%         % compute residual
+%         resid = norm(blockNorm(q - qq), this.normType); 
+%         res.residual = resid;
+%     end
+% end
 
 %% Utility methods
 methods

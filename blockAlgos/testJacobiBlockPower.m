@@ -25,7 +25,7 @@ data0 = rand(4, 7);
 data0 = round(data0 * 1000) / 1000;
 
 % create block matrix instance
-data = BlockMatrix(data0, mdims);
+data = BlockMatrix.create(data0, mdims);
 
 % display the BlockMatrix
 disp('Block matrix:');
@@ -40,7 +40,7 @@ disp(data);
 vdims = BlockDimensions({[2 3 2], 1});
 
 % create block matrix instance
-tt = BlockMatrix(rand(7, 1), vdims);
+tt = BlockMatrix.create(rand(7, 1), vdims);
 
 % display the block-vector (transposed)
 disp('Transpose of input vector t:');
@@ -61,11 +61,14 @@ qq = blockProduct_hs(1./blockNorm(tt), tt);
 
 %% Initialization of AlgoState instance
 
+% creates the algorithm class
+algo = JacobiBlockPower(AA);
+
 % create an initial state for the block power iteration algorithm
-state0 = JacobiBlockPower(AA, qq);
+state0 = BlockPowerAlgoState(qq);
 
 % display content of AlgoState instance:
-disp(state0);
+disp(algo);
 
 % init residual
 resid = 1;
@@ -80,12 +83,12 @@ tol = 1e-18;
 %% Iteration example
 
 stateList = cell(1, nIters);
-state = state0;
 
 % iterate until residual is acceptable
+state = state0;
 for iIter = 1:nIters
     % performs one iteration, and get residual
-    state = state.next();
+    state = algo.iterate(state);
     stateList{iIter} = state;
 end
 
@@ -93,7 +96,7 @@ end
 %% Solve problem using "solve" method
 
 % iterate until a stopping criterium is met
-pathToSolution = solve(state0);
+pathToSolution = solve(algo, state0);
 
 % % get solution
 % solution = pathToSolution{end}.vector;
