@@ -67,8 +67,15 @@ algo = JacobiBlockPower(AA);
 % create an initial state for the block power iteration algorithm
 state0 = BlockPowerAlgoState(qq);
 
-% display content of AlgoState instance:
+% display content of Algo instance:
+disp('Algorithm:');
 disp(algo);
+
+% display content of AlgoState instance:
+disp('Initial state:');
+disp(state0);
+disp(state0.vector');
+
 
 % init residual
 resid = 1;
@@ -92,13 +99,36 @@ for iIter = 1:nIters
     stateList{iIter} = state;
 end
 
+% display content of AlgoState instance:
+disp('Final state after N iterations:');
+disp(state);
+disp(state.vector');
+
 
 %% Solve problem using "solve" method
 
 % iterate until a stopping criterium is met
-pathToSolution = solve(algo, state0);
+state = solve(algo, state0);
 
-% % get solution
-% solution = pathToSolution{end}.vector;
-% disp('Transposed solution:');
-% disp(solution');
+% display content of AlgoState instance:
+disp('Final state using solve:');
+disp(state);
+disp(state.vector');
+
+
+%% Compute the path to the solution
+
+% compute the list of positions leading to solution
+pathToSolution = convergence(algo, state0);
+
+% display graph of residuals
+residuals = cellfun(@(x) x.residual, pathToSolution);
+figure; set(gca, 'fontsize', 14);
+plot(residuals);
+title('Residuals');
+xlabel('iterations');
+
+% display the final solution
+solution = pathToSolution{end}.vector;
+disp('Transposed solution:');
+disp(solution');
