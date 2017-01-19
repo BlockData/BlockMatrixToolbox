@@ -10,7 +10,7 @@ function res = blockPowerOptions(varargin)
 %   * maxIterNumber     the maximal number of iterations (default 10)
 %   * residTol          the absolute tolerance on residual between two
 %                       successive iterations (default 1e-8)
-%   * eigenTol          the absolute tolerance on eigen value between two
+%   * criteriumTol      the absolute tolerance on eigen value between two
 %                       successive iterations (default 1e-8)
 %
 %
@@ -31,7 +31,7 @@ function res = blockPowerOptions(varargin)
 res = struct(...
     'maxIterNumber', 100, ...
     'residTol', 1e-8, ...
-    'eigenTol', 1e-8);
+    'criteriumTol', 1e-8);
 
 while length(varargin) > 1
     name = varargin{1};
@@ -40,8 +40,8 @@ while length(varargin) > 1
             res.maxIterNumber = varargin{2};
         case 'residtol'
             res.residTol = varargin{2};
-        case 'eigentol'
-            res.eigenTol = varargin{2};
+        case 'criteriumtol'
+            res.criteriumTol = varargin{2};
         otherwise
             error(['Unknown parameter: ' name]);
     end

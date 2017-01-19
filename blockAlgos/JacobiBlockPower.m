@@ -201,7 +201,7 @@ methods
         % * residTol:       the tolerance on residuals, as the norm of the
         %       block-norm of the difference between two successive vectors. 
         %       Default value is 1e-8.
-        % * eigenTol:       the tolerance on the difference between two
+        % * criteriumTol:   the tolerance on the difference between two
         %       successive values of the computed eigen value. Default
         %       value is 1 e-8. 
         %
