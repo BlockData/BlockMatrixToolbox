@@ -45,4 +45,5 @@ while length(varargin) > 1
         otherwise
             error(['Unknown parameter: ' name]);
     end
+    varargin(1:2) = [];
 end

@@ -139,6 +139,8 @@ methods
         % Iterates this algorithm until a stopping criterion is found
         %
         % U = solve(ALGO, U0);
+        % ALGO is the BlockPowerAlgo instance
+        % U0 is an instance of BlockPowerAlgoState, or a BlockVector.
         %
         % U = solve(..., PNAME, PVALUE)
         % Specified one or several optional parameter as name-value pairs.
@@ -160,6 +162,12 @@ methods
 %             this.vector = varargin{1};
 %             varargin(1) = [];
 %         end
+        
+        % ensure first argument is AlgoState
+        if ~isa(state, 'BlockPowerAlgoState')
+            % try to convert argument to AlgoState instance 
+            state = BlockPowerAlgoState(state);
+        end
         
         % parse optimization options
         options = blockPowerOptions(varargin{:});
@@ -318,9 +326,12 @@ methods
        blockLambdas = blockNorm(Au) ./ blockNorm(u);
        lambdas = getMatrix(blockLambdas);       
    end
-   
-   function t = globality(this)
-       % Returns eig(A - lambda * I)
+
+   function res = isGlobal(this)
+       % Returns 1 of eig(A - lambda * I) or NaN otherwise.
+       %
+       % see also
+       %    globality
        
        % get vector and core matrix
        u = this.vector;
@@ -344,6 +355,58 @@ methods
        
        lambdaI = BlockDiagonal(blocks);
        t = eig(getMatrix(A - lambdaI));
+       
+       if t < 0
+           res = 1;
+       else
+           res = NaN;
+       end
+   end
+   
+   function bestSolution = globality(this, varargin)
+       % Performs several trials to fin the best solution in unit hypercube
+       %
+       % usage
+       %    STATE = globality(ALGO);
+       %
+       %    STATE = globality(ALGO, NSIMS);
+       %    Where NSIMS is the number of simulations.
+       %
+       %    STATE = globality(..., OPT_NAME, OPT_VAL);
+       %    Specifies optional parameters as pairs of name-value. See
+       %    blockPowerOptions for details.
+       %
+       % see also
+       %    isGlobal
+       
+       % parse number of simulations
+       nSimuls = 10;
+       if ~isempty(varargin) && isnumeric(varargin{1})
+           nSimuls = varargin{1};
+           varargin(1) = [];
+       end
+       
+       % integer partition of the vector
+       vparts = blockDimensions(this.data, 2);
+       
+       % block dimensions of the vector
+       vdims = BlockDimensions({vparts, IntegerPartition(1)});
+       
+       % init residual to max value to force keeping first solution
+       bestResidual = Inf;
+       
+       % run the simulations
+       for i = 1:nSimuls
+           % compute a new solution
+           vector = BlockPowerAlgoState(BlockMatrix(rand(size(vdims)), vdims));
+           solution = solve(this, vector, varargin{:});
+           
+           % compare residuals, and keep best solution
+           if solution.residual < bestResidual
+               bestSolution = solution;
+               bestResidual = solution.residual;
+           end
+       end
    end
 end
 
