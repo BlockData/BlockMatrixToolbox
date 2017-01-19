@@ -12,7 +12,7 @@ original structure of the experiment.
 # Overview
 
 The toolbox can be downloaded by cloning the project from the following URL:
-[https://github.com/dlegland/BlockMatrixToolbox.git](https://github.com/dlegland/BlockMatrixToolbox.git)
+[http://github.com/BlockData/BlockMatrixToolbox](http://github.com/BlockData/BlockMatrixToolbox). Select the "release" tab to download archive, or simply cone the projet on your local computer.
 Then, simply add the path to the "BlockMatrixToolbox/multiBlock" directory to the path.
 
 ## Creation of Block-Matrices
