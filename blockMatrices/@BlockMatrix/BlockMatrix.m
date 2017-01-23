@@ -938,6 +938,67 @@ methods
 
 end % end methods
 
+
+%% Array concatenation
+methods
+    function res = cat(dim, varargin)
+        % overload concatenation method for arbitrary dimension (between 1 and 2...) 
+        switch dim
+            case 1
+                res = vertcat(varargin{:});
+            case 2
+                res = horzcat(varargin{:});
+            otherwise
+                error('unsupported dimension: %d', dim);
+        end
+    end
+    
+    function res = horzcat(this, varargin)
+        % Overload the horizontal concatenation operator
+        
+        % initialize block dimension and data to that of first BlockMatrix
+        data2 = reshape(getMatrix(this), size(this));
+        dims2 = blockDimensions(this);
+        
+        for i = 1:length(varargin)
+            var = varargin{i};
+            
+            dataToAdd = reshape(getMatrix(var), size(var));
+            if size(dataToAdd, 1) ~= size(data2, 1)
+                error('BlockMatrices should have same number of rows');
+            end
+            
+            data2 = [data2 dataToAdd]; %#ok<AGROW>
+            dims2 = [dims2 var.dims]; %#ok<AGROW>
+        end
+        
+        res = BlockMatrix.create(data2, dims2);
+    end
+    
+    function res = vertcat(this, varargin)
+        % Override the vertical concatenation operator
+        
+        % initialize block dimension and data to that of first BlockMatrix
+        data2 = reshape(getMatrix(this), size(this));
+        dims2 = blockDimensions(this);
+        
+        for i = 1:length(varargin)
+            var = varargin{i};
+            
+            dataToAdd = reshape(getMatrix(var), size(var));
+            if size(dataToAdd, 2) ~= size(data2, 2)
+                error('BlockMatrices should have same number of columns');
+            end
+            
+            data2 = [data2 ; dataToAdd]; %#ok<AGROW>
+            dims2 = [dims2 ; var.dims]; %#ok<AGROW>
+        end
+        
+        res = BlockMatrix.create(data2, dims2);
+    end
+end
+
+
 %% Overload indexing methods
 methods
     function varargout = subsref(this, subs)

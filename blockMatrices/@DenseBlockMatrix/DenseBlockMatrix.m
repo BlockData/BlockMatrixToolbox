@@ -447,62 +447,6 @@ methods
         dims2 = transpose(this.dims);
         res = DenseBlockMatrix(data2, dims2);
     end
-    
-    function res = cat(dim, varargin)
-        % overload concatenation method for arbitrary dimension (between 1 and 2...) 
-        switch dim
-            case 1
-                res = vertcat(varargin{:});
-            case 2
-                res = horzcat(varargin{:});
-            otherwise
-                error('unsupported dimension: %d', dim);
-        end
-    end
-    
-    function res = horzcat(this, varargin)
-        % Overload the horizontal concatenation operator
-        
-        % initialize block dimension and data to that of first DenseBlockMatrix
-        data2 = reshape(this.data, size(this));
-        dims2 = this.dims;
-        
-        for i = 1:length(varargin)
-            var = varargin{i};
-            
-            dataToAdd = reshape(var.data, size(var));
-            if size(dataToAdd, 1) ~= size(data2, 1)
-                error('BlockMatrices should have same number of rows');
-            end
-            
-            data2 = [data2 dataToAdd]; %#ok<AGROW>
-            dims2 = [dims2 var.dims]; %#ok<AGROW>
-        end
-        
-        res = DenseBlockMatrix(data2, dims2);
-    end
-    
-    function res = vertcat(this, varargin)
-        % Override the vertical concatenation operator
-        
-        % initialize block dimension and data to that of first BlockMatrix
-        data2 = reshape(this.data, size(this));
-        dims2 = this.dims;
-        
-        for i = 1:length(varargin)
-            var = varargin{i};
-            
-            dataToAdd = reshape(var.data, size(var));
-            if size(dataToAdd, 2) ~= size(data2, 2)
-                error('BlockMatrices should have same number of columns');
-            end
-            
-            data2 = [data2 ; dataToAdd]; %#ok<AGROW>
-            dims2 = [dims2 ; var.dims]; %#ok<AGROW>
-        end
-        
-        res = DenseBlockMatrix(data2, dims2);
-    end
 end    
     
 
