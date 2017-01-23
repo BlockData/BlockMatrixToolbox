@@ -37,9 +37,6 @@ methods (Abstract)
     n = blockNumber(this, varargin)
     
     % Return the number of blocks in each dimension
-    n = getBlockNumbers(this)
-    
-    % Return the number of blocks in each dimension
     n = blockSize(this, varargin)
     
     % Returns the block content at a given position

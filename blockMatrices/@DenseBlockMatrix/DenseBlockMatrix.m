@@ -260,24 +260,9 @@ methods
         end
     end
 
-    function dims = getBlockDimensions(this, varargin)
-        % deprecated: use size instead
-        warning('BlockMatrixToolbox:deprecated', ...
-            'method ''getBlockDimensions'' is obsolete, use ''blockDimensions'' instead');
-        dims = blockDimensions(this, varargin{:});
-    end
-    
     function dim = dimensionality(this)
         % Return the number of dimensions of this block matrix (usually 2)
         dim = dimensionality(this.dims);
-    end
-    
-    function siz = getSize(this, varargin)
-        % Return the size in each direction of this block matrix object
-        % deprecated: use size instead
-        warning('BlockMatrixToolbox:deprecated', ...
-            'method ''getSize'' is obsolete, use ''size'' instead');
-        siz = size(this.dims, varargin{:});
     end
     
     function varargout = blockSize(this, varargin)
@@ -298,26 +283,6 @@ methods
     function n = blockNumber(this)
         % Return the total number of blocks of this DenseBlockMatrix
         n = prod(blockSize(this));
-    end
-    
-    function n = getBlockNumber(this, varargin)
-        % Return the total number of blocks in this block matrix, or the
-        % number of blocks in a given dimension
-        %
-        % deprecated: use blockSize instead
-        
-        warning('BlockMatrixToolbox:deprecated', ...
-            'method ''getBlockNumber'' is obsolete, use ''blockSize'' instead');
-        n = getBlockNumber(this.dims, varargin{:});
-    end
-    
-    function n = getBlockNumbers(this)
-        % Return the number of blocks in each dimension
-        % deprecated: use blockSize instead
-        
-        warning('BlockMatrixToolbox:deprecated', ...
-            'method ''getBlockNumbers'' is obsolete, use ''blockSize'' instead');
-        n = getBlockNumbers(this.dims);
     end
 end
 
