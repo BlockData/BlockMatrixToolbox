@@ -7,7 +7,7 @@ function X = blockProduct_ku(A, B)
 % Transposition rule: blockProduct_ku(A, B)=(blockProduct_su(B', A'))'
 %
 % Example:
-%   A = BlockMatrix(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
+%   A = BlockMatrix.create(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
 %   B = BlockMatrix.oneBlock(ones(3,2));
 %   X = blockProduct_ku(A,B);
 %

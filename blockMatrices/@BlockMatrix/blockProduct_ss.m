@@ -8,7 +8,7 @@ function X = blockProduct_ss(lambda,A)
 % lambda must be a one Block matrix containing a scalar Block.
 %
 % Example
-%   A = BlockMatrix(reshape(1:16, [8 2]), {[4 4], [1 1]});
+%   A = BlockMatrix.create(reshape(1:16, [8 2]), {[4 4], [1 1]});
 %   disp(A);
 %   lambda = BlockMatrix.oneBlock(3);
 %   AA = blockProduct_ss(lambda, A)
@@ -32,4 +32,4 @@ end
 dimsX = blockDimensions(A);
 matA = getMatrix(A);
 scalarlambda = getMatrix(lambda);
-X = BlockMatrix(scalarlambda*matA, dimsX);
+X = BlockMatrix.create(scalarlambda*matA, dimsX);

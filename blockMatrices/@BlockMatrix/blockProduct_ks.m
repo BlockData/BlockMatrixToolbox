@@ -39,4 +39,4 @@ pcol = IntegerPartition(pB*ones(pA,1));
 
 matA = getMatrix(A);
 matB = getMatrix(B);
-X = BlockMatrix(kron(matA,matB), BlockDimensions({prows, pcol}));
+X = BlockMatrix.create(kron(matA,matB), BlockDimensions({prows, pcol}));

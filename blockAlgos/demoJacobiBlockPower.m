@@ -20,7 +20,7 @@
 mdims = BlockDimensions({4, [2 3 2]});
 
 % create block matrix instance
-data = BlockMatrix(rand(4, 7), mdims);
+data = BlockMatrix.create(rand(4, 7), mdims);
 
 % display the BlockMatrix
 disp('Block matrix:');
@@ -33,7 +33,7 @@ disp(data);
 vdims = BlockDimensions({[2 3 2], 1});
 
 % create block matrix instance
-q0 = BlockMatrix(rand(7, 1), vdims);
+q0 = BlockMatrix.create(rand(7, 1), vdims);
 
 % display the block-vector (transposed)
 disp('Transpose of input vector t:');

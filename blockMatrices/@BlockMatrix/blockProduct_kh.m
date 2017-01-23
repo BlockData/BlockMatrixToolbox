@@ -11,7 +11,7 @@ function X = blockProduct_kh(A, B)
 % size(B).
 %
 % Example
-%    A = BlockMatrix(reshape(1:36, [9 4]), {[3 3 3], [2 2]});
+%    A = BlockMatrix.create(reshape(1:36, [9 4]), {[3 3 3], [2 2]});
 %    disp(A);
 %    B = BlockMatrix.oneBlock(2*ones(3,2));
 %    X = blockProduct_kh(A,B)

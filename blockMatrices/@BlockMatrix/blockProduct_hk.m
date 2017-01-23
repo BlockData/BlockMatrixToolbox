@@ -7,7 +7,7 @@ function X = blockProduct_hk(A, B)
 % A and B must have the same block-Size.
 %
 % Example:
-%     A = BlockMatrix(reshape(1:12, [3 4]), 3, [1 1 1 1]);
+%     A = BlockMatrix.create(reshape(1:12, [3 4]), 3, [1 1 1 1]);
 %     disp(A);
 %     X = blockProduct_hk(A,A)
 %
@@ -21,7 +21,7 @@ function X = blockProduct_hk(A, B)
 % Created: 2015-06-00,  using Matlab(R2015a)
 
 % check conditions on dimensions
-if any(blockSize(A) ~= blockSize(B));
+if any(blockSize(A) ~= blockSize(B))
     error('BlockSize of A and BlockSize of B must be the same');
 end
 

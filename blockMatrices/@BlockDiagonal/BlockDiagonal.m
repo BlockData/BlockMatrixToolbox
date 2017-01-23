@@ -1,4 +1,4 @@
-classdef (InferiorClasses = {?AbstractBlockMatrix}) BlockDiagonal <  AbstractBlockMatrix
+classdef (InferiorClasses = {?BlockMatrix}) BlockDiagonal <  BlockMatrix
 %BLOCKDIAGONAL Block Matrix with zeros blocks except on diagonal blocks
 %
 %   BlockDiagonal objects are constructed from the list of blocks located
@@ -85,7 +85,7 @@ methods
             this.diags = var1.diags;
             this.dims = var1.dims;
             
-        elseif isa(varargin{1}, 'AbstractBlockMatrix')
+        elseif isa(varargin{1}, 'BlockMatrix')
             % copy constructor from another type of BlockMatrix object
             bm = varargin{1};
             blocks = cell(1, blockNumber(bm));

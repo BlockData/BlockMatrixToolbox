@@ -7,9 +7,9 @@ function X = blockProduct_hu(A, B)
 % block-columns of A and block-rows of B must be the same.
 %
 % Example:
-%    A = BlockMatrix(reshape(1:20, [5 4]), {[3 2], [2 2]});
+%    A = BlockMatrix.create(reshape(1:20, [5 4]), {[3 2], [2 2]});
 %    disp(B);
-%    B = BlockMatrix(reshape(1:12, [4 3]), {[2 2], [2 1]});
+%    B = BlockMatrix.Create(reshape(1:12, [4 3]), {[2 2], [2 1]});
 %    X = blockProduct_hu(A,B)
 %
 % Reference : R.A. Horn, R. Mathias, Y. Nakamura. Linear and Multilinear

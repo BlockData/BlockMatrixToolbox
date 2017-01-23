@@ -43,7 +43,7 @@ methods
         end
         
         % initialisation constructor
-        if ~isa(init, 'AbstractBlockMatrix')
+        if ~isa(init, 'BlockMatrix')
             error('Requires an instance of BlockMatrix as first input');
         end
         this.vector = init;

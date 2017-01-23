@@ -8,8 +8,8 @@ function X = blockProduct_hs(A, B)
 % same. 
 %
 % Example:
-%    A = scalarBlock(reshape(1:4, [2 2]))
-%    B = BlockMatrix(reshape(1:16, [4 4]), {[2 2], [2 2]});
+%    A = BlockMatrix.scalarBlock(reshape(1:4, [2 2]))
+%    B = BlockMatrix.create(reshape(1:16, [4 4]), {[2 2], [2 2]});
 %    X = blockProduct_hs(A,B)
 %
 

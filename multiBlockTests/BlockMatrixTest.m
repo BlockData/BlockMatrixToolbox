@@ -24,7 +24,7 @@ methods (Test)
         % create the BlockMatrix object
         data = reshape(1:28, [4 7]);
         parts = {[2 2], [2 3 2]};
-        BM = BlockMatrix(data, parts);
+        BM = BlockMatrix.create(data, parts);
 
         testCase.verifyEqual(isempty(BM), false);
     end
@@ -133,7 +133,7 @@ methods (Test)
         data = reshape(1:16, [8 2]);
         scalar = 3;
         
-        A = BlockMatrix(data, {[4 4], [1 1]});
+        A = BlockMatrix.create(data, {[4 4], [1 1]});
         lambda = BlockMatrix.oneBlock(scalar);
         AA = blockProduct_ss(lambda, A);
         

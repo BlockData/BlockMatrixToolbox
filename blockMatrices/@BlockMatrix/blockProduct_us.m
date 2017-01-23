@@ -12,7 +12,7 @@ function X = blockProduct_us(A, B)
 %
 % Example:
 %   A = BlockMatrix.scalarBlock([1 2 3;3 2 1]);
-%   B = BlockMatrix(reshape(1:36, [4 9])', {[3 3 3], [2 2]});
+%   B = BlockMatrix.create(reshape(1:36, [4 9])', {[3 3 3], [2 2]});
 %   disp(B);
 %   X = blockProduct_us(A, B)
 %

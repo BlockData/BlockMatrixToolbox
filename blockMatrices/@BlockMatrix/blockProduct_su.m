@@ -8,7 +8,7 @@ function X = blockProduct_su(A, B)
 %
 % Example:
 %   A = BlockMatrix.oneBlock(ones(2,3));
-%   B = BlockMatrix(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
+%   B = BlockMatrix.create(reshape(1:36, [6 6]), {[3 3], [2 2 2]});
 %   disp(B);
 %   X = blockProduct_su(A, B);
 %
@@ -25,7 +25,7 @@ function X = blockProduct_su(A, B)
 kB = blockSize(B,1);
 browstest = IntegerPartition(size(getMatrix(A),2)*ones(1,kB));
 browsB = IntegerPartition(blockDimensions(B,1));
-if  or(all(blockSize(A)~=[1, 1]), all(browstest~=browsB));
+if or(all(blockSize(A)~=[1, 1]), all(browstest~=browsB))
     error('row blocks of B must be uniform with each part equals size(A,2)');
 end
 

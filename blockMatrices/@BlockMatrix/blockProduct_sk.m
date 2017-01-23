@@ -7,7 +7,7 @@ function X = blockProduct_sk(A, B)
 % A must be oneBlock-Matrix.
 %
 % Example
-%     B = BlockMatrix(reshape(1:36, [6 6]), {[3 3], [2 2 2]})
+%     B = BlockMatrix.create(reshape(1:36, [6 6]), {[3 3], [2 2 2]})
 %     A = oneBlock(reshape(1:4,[2,2]))
 %     X = blockProduct_sk(A,B);
 %

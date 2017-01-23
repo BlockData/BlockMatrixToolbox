@@ -11,8 +11,8 @@ function X = blockProduct_uh(A, B)
 %       size(A,2)/BlockSize(B,1).
 %
 % Example:
-%   A = BlockMatrix(reshape(1:36, [9 4])', {[2 2], [3 3 3]});
-%   B = BlockMatrix(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
+%   A = BlockMatrix.create(reshape(1:36, [9 4])', {[2 2], [3 3 3]});
+%   B = BlockMatrix.create(reshape(1:36, [6 6]), {[2 2 2], [3 3]});
 %   disp(B);
 %   X = blockProduct_uh(A, B)
 %

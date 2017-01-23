@@ -7,8 +7,8 @@ function X = blockProduct_uk(A, B)
 % Block-rows of B and block-columns of A must be uniform.
 %
 % Example:
-%   A = BlockMatrix(reshape(1:12, [3 4]), {[3], [1 1 1 1 ]});
-%   B = BlockMatrix(reshape(1:12, [4 3]), {[1 1 1 1], [1 2]});
+%   A = BlockMatrix.create(reshape(1:12, [3 4]), {[3], [1 1 1 1 ]});
+%   B = BlockMatrix.create(reshape(1:12, [4 3]), {[1 1 1 1], [1 2]});
 %   X = blockProduct_uk(A,A')
 %
 % References: 	W. De Launey J. Seberrya Journal of Combinatorial Theory,

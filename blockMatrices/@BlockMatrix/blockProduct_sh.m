@@ -10,7 +10,7 @@ function X = blockProduct_sh(A, B)
 %
 % Example:
 %   A = BlockMatrix.oneBlock(2*ones(2,3));
-%   B = BlockMatrix(reshape(1:36, [4 9]), {[2 2], [3 3 3]});
+%   B = BlockMatrix.create(reshape(1:36, [4 9]), {[2 2], [3 3 3]});
 %   X = blockProduct_sh(A,B)
 %
 

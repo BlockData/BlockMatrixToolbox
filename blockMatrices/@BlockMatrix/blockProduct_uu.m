@@ -19,7 +19,7 @@ function X = blockProduct_uu(A, B)
 % Created: 2015-06-00,  using Matlab(R2015a)
 
 % check conditions on dimensions
-if blockDimensions(A, 2)~= blockDimensions(B, 1);
+if blockDimensions(A, 2)~= blockDimensions(B, 1)
     error(' block rows of B and block columns of A must be equal');
 end
 
@@ -27,4 +27,4 @@ end
 dimsX = BlockDimensions({blockDimensions(A, 1), blockDimensions(B, 2)});
 matA = getMatrix(A);
 matB = getMatrix(B);
-X = BlockMatrix(matA*matB, dimsX);
+X = BlockMatrix.create(matA * matB, dimsX);
