@@ -256,8 +256,9 @@ methods
         % run the simulations
         for i = 1:nSimuls
             % compute a new solution
-            vector = BlockPowerAlgoState(BlockMatrix(rand(size(vdims)), vdims));
-            solution = solve(this, vector, varargin{:});
+            vector = BlockMatrix.create(rand(size(vdims)), vdims);
+            state = BlockPowerAlgoState(vector);
+            solution = solve(this, state, varargin{:});
 
             % compare residuals, and keep best solution
             if solution.residual < bestResidual
