@@ -1,11 +1,8 @@
-classdef JacobiBlockPower < BlockPowerAlgo
-%JACOBIBLOCKPOWER Jacobi algorithm for solving block power algorithms
+classdef BlockPower < BlockPowerAlgo
+%BLOCKPOWER Block power algorithms solver
 %
-%   Deprecated !
-%   Use the "BlockPower" class instead.
-%
-%   STATE = JacobiBlockPower(BM)
-%   Creates a new instance of Jacobi Block Power iteration algorithm, using
+%   STATE = BlockPower(BM)
+%   Creates a new instance of Block Power iteration algorithm, using
 %   the specified Block-Matrix BM for representing the problem, and an
 %   optional Block-Vector representing the initial state of the algorithm.
 %
@@ -21,7 +18,7 @@ classdef JacobiBlockPower < BlockPowerAlgo
 %
 %
 %   See also
-%     GaussBlockPower
+%     
 
 % ------
 % Author: David Legland
@@ -54,23 +51,21 @@ end % end properties
 
 %% Constructor
 methods
-    function this = JacobiBlockPower(A, varargin)
-        % Constructor for JacobiBlockPower class
+    function this = BlockPower(A, varargin)
+        % Constructor for BlockPower class
         %
         % Usage:
-        %   STATE = JacobiBlockPower(MAT);
+        %   STATE = BlockPower(MAT);
         %   MAT is a N-by-P BlockMatrix.
         %
 
-        warning('JacobiBlockPower is deprecated: use BlockPower class instead');
-        
         % Empty constructor, to allow creation of arrays
         if nargin == 0
             return;
         end
 
         % Copy constructor
-        if isa(A, 'JacobiBlockPower')
+        if isa(A, 'BlockPower')
             this.data   = A.data;
             this.core   = A.core;
 
