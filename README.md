@@ -29,12 +29,12 @@ Let us start with a rather simple matrix:
 
 A Block-Dimension can be assigned to this matrix, using the **BlockMatrix** class:
 
-    >> X = BlockMatrix(data, [2 2], [2 3 2]);
+    >> X = BlockMatrix.create(data, [2 2], [2 3 2]);
  
 As an alternative syntax, the **BlockDimension** object can be explicitely created and given as argument:
 
     >> BD = BlockDimension({[2 2], [2 3 2]});
-    >> X = BlockMatrix(data, BD);
+    >> X = BlockMatrix.create(data, BD);
 
 The content of a BlockMatrix can be shown by using the `disp` function, or simply by omitting the 
 final semi colon:
